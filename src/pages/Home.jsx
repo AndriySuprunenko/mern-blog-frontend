@@ -2,15 +2,21 @@ import React from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Grid from '@mui/material/Grid';
-import axios from '../axios';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { Post } from '../components/Post';
 import { TagsBlock } from '../components/TagsBlock';
 import { CommentsBlock } from '../components/CommentsBlock';
+import { fetchPosts } from '../redux/slices/posts';
 
 export const Home = () => {
+  const dispatch = useDispatch();
+  const { posts, tags } = useSelector((state) => state.posts);
+
+  const isPostsLoading = posts.status === 'loading';
+
   React.useEffect(() => {
-    axios.get('/posts');
+    dispatch(fetchPosts);
   }, []);
   return (
     <>
@@ -24,7 +30,7 @@ export const Home = () => {
       </Tabs>
       <Grid container spacing={4}>
         <Grid xs={8} item>
-          {[...Array(5)].map(() => (
+          {(isPostsLoading ? [...Array(5)] : posts.items).map(() => (
             <Post
               id={1}
               title="Roast the code #1 | Rock Paper Scissors"
@@ -38,6 +44,7 @@ export const Home = () => {
               viewsCount={150}
               commentsCount={3}
               tags={['react', 'fun', 'typescript']}
+              isLoading={true}
               isEditable
             />
           ))}
